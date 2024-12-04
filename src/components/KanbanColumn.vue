@@ -17,7 +17,14 @@
       <button @click="cancelAddTask" class="btn btn-cancel">Cancel</button>
     </div>
 
-    <draggable :list="tasks" group="tasks" @start="dragging = true" @end="onDragEnd" item-key="id">
+    <!-- Draggable Task List -->
+    <draggable
+      :list="tasks"
+      group="tasks"
+      @change="onListChange"
+      item-key="id"
+      class="task-list"
+    >
       <template #item="{ element }">
         <div :key="element.id" class="task-card p-4 bg-white rounded-lg shadow-md">
           <h3 class="font-semibold">{{ element.title }}</h3>
@@ -33,8 +40,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import draggable from 'vuedraggable'
+import { mapActions } from 'vuex';
+import draggable from 'vuedraggable';
 
 export default {
   name: 'KanbanColumn',
@@ -53,50 +60,47 @@ export default {
         description: '',
         status: this.title,
       },
-      dragging: false,
-    }
+    };
   },
   methods: {
     ...mapActions({
       updateTask: 'updateTask',
-      addTask: 'addTask', // Add a Vuex action for adding tasks
+      addTask: 'addTask',
       deleteTask: 'deleteTask',
     }),
-    onDragEnd(event) {
-      // Get the task from the list by its ID
-      const task = this.tasks[event.oldIndex]
-      task.status = this.title
-
-      // Update task status in Firestore and Vuex store
-      this.updateTask(task)
+    onListChange(event) {
+      if (event.moved) {
+        const movedTask = this.tasks[event.moved.newIndex];
+        movedTask.status = this.title;
+        this.updateTask(movedTask);
+      }
     },
     addTask() {
       if (this.newTask.title && this.newTask.description) {
-        this.$store.dispatch('addTask', this.newTask)
-        this.showAddTaskForm = false
-        this.newTask = { title: '', description: '', status: this.title }
+        this.$store.dispatch('addTask', this.newTask);
+        this.showAddTaskForm = false;
+        this.newTask = { title: '', description: '', status: this.title };
       }
     },
     cancelAddTask() {
-      this.showAddTaskForm = false
-      this.newTask = { title: '', description: '', status: this.title }
+      this.showAddTaskForm = false;
+      this.newTask = { title: '', description: '', status: this.title };
     },
     editTask(task) {
-      // Implement edit logic as needed
-      const newTitle = prompt('Edit task title', task.title)
-      const newDescription = prompt('Edit task description', task.description)
+      const newTitle = prompt('Edit task title', task.title);
+      const newDescription = prompt('Edit task description', task.description);
 
       if (newTitle !== null && newDescription !== null) {
-        task.title = newTitle
-        task.description = newDescription
-        this.updateTask(task)
+        task.title = newTitle;
+        task.description = newDescription;
+        this.updateTask(task);
       }
     },
     async deleteTask(taskId) {
-      await this.$store.dispatch('deleteTask', taskId)
+      await this.$store.dispatch('deleteTask', taskId);
     },
   },
-}
+};
 </script>
 
 <style scoped>

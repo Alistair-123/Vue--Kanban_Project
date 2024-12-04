@@ -1,4 +1,3 @@
-<!-- KanbanBoard.vue -->
 <template>
   <div class="kanban-board">
     <div class="kanban-column" v-for="column in columns" :key="column.name">
@@ -8,8 +7,8 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import KanbanColumn from './KanbanColumn.vue'
+import { mapState, mapActions } from 'vuex';
+import KanbanColumn from './KanbanColumn.vue';
 
 export default {
   name: 'KanbanBoard',
@@ -19,7 +18,7 @@ export default {
   data() {
     return {
       columns: [{ name: 'To Do' }, { name: 'In Progress' }, { name: 'Done' }],
-    }
+    };
   },
   computed: {
     ...mapState({
@@ -31,13 +30,13 @@ export default {
       fetchTasks: 'fetchTasks',
     }),
     filteredTasks(status) {
-      return this.tasks.filter((task) => task.status === status)
+      return this.tasks.filter((task) => task.status === status);
     },
   },
   created() {
-    this.fetchTasks()
+    this.fetchTasks();
   },
-}
+};
 </script>
 
 <style scoped>
